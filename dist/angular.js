@@ -61,12 +61,10 @@
 	        if (newData) {
 	          var as = iAttrs.as;
 	          if (as === 'html') {
-	            console.log('html');
 	            vp.generateHTMLFromByteArray(newData, function(result) {
 	              iElement.append(result);
 	            });
 	          } else if (as === 'canvas') {
-	            console.log('canvas');
 	            vp.analyzeAndGenerateCanvasFromByteArray(newData, function(result) {
 	              iElement.append(result);
 	            });
