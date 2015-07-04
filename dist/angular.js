@@ -46,31 +46,32 @@
 
 	var VirtualPrinter = __webpack_require__(1)
 
+	var vp = new VirtualPrinter();
+
 	/*
 	 * AngularJS directive for rendering ESC data to an HTML5 canvas
 	 */
 	angular.module('virtualprinter', []).directive('escRender', function() {
-	  var vp = new VirtualPrinter();
 	  return {
 	    restrict: 'AE',
 	    scope: {
 	      data: '=',
 	    },
 	    link: function(scope, iElement, iAttrs, ctrl) {
+	      var as = iAttrs.as;
+	      var method = null;
+	      if (as === 'html') {
+	        method = 'generateHTMLFromByteArray'; 
+	      } else if (as === 'canvas') {
+	        method = 'analyzeAndGenerateCanvasFromByteArray';
+	      } else {
+	        throw new Error('Must specify attribute as=[html|canvas]');
+	      } 
 	      scope.$watch('data', function(newData) {
 	        if (newData) {
-	          var as = iAttrs.as;
-	          if (as === 'html') {
-	            vp.generateHTMLFromByteArray(newData, function(result) {
-	              iElement.append(result);
-	            });
-	          } else if (as === 'canvas') {
-	            vp.analyzeAndGenerateCanvasFromByteArray(newData, function(result) {
-	              iElement.append(result);
-	            });
-	          } else {
-	            throw new Error('Must specify attribute as=[html|canvas]');
-	          }
+	          vp[method](newData, function(result) {
+	            iElement.empty().append(result);
+	          });
 	        }
 	      }, true);
 	    }
