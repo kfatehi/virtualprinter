@@ -1,4 +1,4 @@
-var VirtualPrinter = require('./');
+var VirtualPrinter = require('./')
 
 /*
  * AngularJS directive for rendering ESC data to an HTML5 canvas
