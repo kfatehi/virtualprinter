@@ -1,0 +1,17 @@
+{
+  "name": "virtualprinter",
+  "version": "1.0.0",
+  "main": "dist/virtualprinter.js",
+  "authors": [
+    "Keyvan Fatehi <keyvanfatehi@gmail.com>"
+  ],
+  "license": "None",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
