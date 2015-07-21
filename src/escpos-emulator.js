@@ -1,7 +1,9 @@
 var c = require('./constants');
 
-EscposEmulator = function(generator) {
+EscposEmulator = function(generator, options) {
   this.generator = generator;
+  this.debug = !!(options || {}).debug;
+  console.log('escpost debug', this.debug);
 }
 
 EscposEmulator.prototype.emulate = function() {

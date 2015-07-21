@@ -1,6 +1,7 @@
 var c = require('./constants');
 
-CanvasGenerator = function(canvas, height, width){
+CanvasGenerator = function(canvas, height, width, debug){
+  this.debug = !!debug;
   this.canvas = canvas || document.createElement('canvas');
   this.context = this.canvas.getContext('2d');
   this.setFont();
@@ -70,7 +71,11 @@ CanvasGenerator.prototype.setJustificationCentering = function() {
 }
 
 CanvasGenerator.prototype.getByte = function() {
-  return this.byteArray[this.bytePosition++];
+  var byte = this.byteArray[this.bytePosition++];
+  if (this.debug) {
+    this.context.fillText('{'+byte+'}', this.position.x, this.position.y);
+  }
+  return byte;
 }
 
 CanvasGenerator.prototype.getChar = function() {
@@ -92,7 +97,7 @@ CanvasGenerator.prototype.hasBytes = function() {
 }
 
 CanvasGenerator.prototype.setEmulator = function(klass) {
-  this.emulator = new klass(this);
+  this.emulator = new klass(this, { debug: this.debug });
 }
 
 CanvasGenerator.prototype.generateFromUint8Array = function(byteArray, done) {

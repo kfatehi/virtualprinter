@@ -2,13 +2,14 @@ var CanvasGenerator = require('./canvas-generator');
 var FakeCanvas = require('./fake-canvas');
 
 var CustomGenerator = function(options) {
+  this.debug = options.debug;
   if (options.path) {
     this.buffer = require('fs').readFileSync(options.path);
   } else if (options.buffer) {
     this.buffer = options.buffer
   } else throw new Error('Options must include `path` or `buffer`')
   this.dimensions = { height: 0, width: 0 };
-  this.generator = new CanvasGenerator( new FakeCanvas() );
+  this.generator = new CanvasGenerator( new FakeCanvas({ debug: this.debug }), null, null, this.debug);
   this.generator.setEmulator(EscposEmulator);
 }
 

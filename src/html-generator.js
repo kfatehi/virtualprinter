@@ -1,6 +1,8 @@
 var CustomGenerator = require('./custom-generator');
 
-var HtmlGenerator = function() {};
+var HtmlGenerator = function(opts) {
+  this.debug = !!(opts || {}).debug;
+};
 
 HtmlGenerator.prototype.generate = function(byteArray, done) {
   var container = $('<div>').css({
@@ -26,7 +28,7 @@ HtmlGenerator.prototype.generate = function(byteArray, done) {
     span = null;
   }
 
-  new CustomGenerator({ buffer: byteArray }).work(function(action) {
+  new CustomGenerator({ debug: this.debug, buffer: byteArray }).work(function(action) {
     if (action.name === "fillText") {
       if (action.y != y) {
         endSpan()

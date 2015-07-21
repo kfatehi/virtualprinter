@@ -64,6 +64,10 @@ VirtualPrinter.prototype.showHidden = function(string) {
   return gen.generateStringFromString(string);
 }
 
+VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, done) {
+  new HtmlGenerator({ debug: true }).generate(byteArray, done);
+}
+
 VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
   new HtmlGenerator().generate(byteArray, done);
 }

@@ -18,8 +18,10 @@ angular.module('virtualprinter', []).directive('escRender', function() {
         method = 'generateHTMLFromByteArray'; 
       } else if (as === 'canvas') {
         method = 'analyzeAndGenerateCanvasFromByteArray';
+      } else if (as === 'debug') {
+        method = 'generateDebugHTMLFromByteArray';
       } else {
-        throw new Error('Must specify attribute as=[html|canvas]');
+        throw new Error('Must specify attribute as=[html|canvas|debug]');
       } 
       scope.$watch('receipt.data.data', function(data) {
         if (data) {

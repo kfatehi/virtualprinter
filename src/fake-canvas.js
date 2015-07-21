@@ -1,4 +1,7 @@
-FakeCanvas = function(){ this.actions = [] }
+FakeCanvas = function(opts){
+  this.debug = opts.debug;
+  this.actions = [];
+}
 FakeCanvas.prototype.getContext = function() { return this }
 FakeCanvas.prototype.rect = function() {}
 FakeCanvas.prototype.fill = function() {}
@@ -12,6 +15,6 @@ FakeCanvas.prototype.fillText = function(char, x, y) {
     fontUnit: 'px',
     fontSize: parseFloat(font[0]),
     x:x, y:y
-  });
+  })
 }
 module.exports = FakeCanvas;
