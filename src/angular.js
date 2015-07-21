@@ -9,7 +9,7 @@ angular.module('virtualprinter', []).directive('escRender', function() {
   return {
     restrict: 'AE',
     scope: {
-      data: '=',
+      receipt: '=',
     },
     link: function(scope, iElement, iAttrs, ctrl) {
       var as = iAttrs.as;
@@ -21,11 +21,20 @@ angular.module('virtualprinter', []).directive('escRender', function() {
       } else {
         throw new Error('Must specify attribute as=[html|canvas]');
       } 
-      scope.$watch('data', function(newData) {
-        if (newData) {
-          vp[method](newData, function(result) {
-            iElement.empty().append(result);
-          });
+      scope.$watch('receipt.data.data', function(data) {
+        if (data) {
+          if (as === "canvas" && scope.receipt._dataURL) {
+            iElement.empty().append($('<img src="'+scope.receipt._dataURL+'">'));
+          } else {
+            vp[method](data, function(result) {
+              if (as === "canvas") {
+                scope.receipt._dataURL = result.toDataURL();
+                iElement.empty().append($('<img src="'+scope.receipt._dataURL+'">'));
+              } else {
+                iElement.empty().append(result);
+              }
+            });
+          }
         }
       }, true);
     }
