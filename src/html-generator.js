@@ -5,6 +5,10 @@ var HtmlGenerator = function(opts) {
 };
 
 HtmlGenerator.prototype.generate = function(byteArray, done) {
+  if (typeof $ === "undefined") {
+    var cheerio = require('cheerio')
+    var $ = cheerio.load('<div></div>');
+  } 
   var container = $('<div>').css({
     whiteSpace: 'pre',
     fontFamily: 'monospace'
@@ -21,7 +25,7 @@ HtmlGenerator.prototype.generate = function(byteArray, done) {
     line = null;
   }
   var startSpan = function(fontSize) {
-    span = $('<span>').css({ fontSize: fontSize });
+    span = $('<span>').css({ 'font-size': fontSize });
   }
   var endSpan = function() {
     if (span) line.append(span);
@@ -43,7 +47,8 @@ HtmlGenerator.prototype.generate = function(byteArray, done) {
         startSpan(action.fontSize)
         fontSize = action.fontSize;
       }
-      span.get(0).innerText+=action.text
+      //span.get(0).innerText+=action.text
+      span.text( span.text() + action.text )
     }
   }, function() {
     endSpan()
