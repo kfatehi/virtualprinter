@@ -1,9 +1,10 @@
 var CanvasGenerator = require('./canvas-generator');
 var FakeCanvas = require('./fake-canvas');
+var EscposEmulator = require('./escpos-emulator');
 
-var CanvasAnalyzer = function(options) {
+var CanvasAnalyzer = function(virtPrint, options) {
   if (options.path) {
-    this.buffer = require('fs').readFileSync(options.path);
+    this.buffer = virtPrint.fs.readFileSync(options.path);
   } else if (options.buffer) {
     this.buffer = options.buffer
   } else throw new Error('Options must include `path` or `buffer`')

@@ -55,7 +55,7 @@
 	  return {
 	    restrict: 'AE',
 	    scope: {
-	      data: '=',
+	      receipt: '=',
 	    },
 	    link: function(scope, iElement, iAttrs, ctrl) {
 	      var as = iAttrs.as;
@@ -64,14 +64,25 @@
 	        method = 'generateHTMLFromByteArray'; 
 	      } else if (as === 'canvas') {
 	        method = 'analyzeAndGenerateCanvasFromByteArray';
+	      } else if (as === 'debug') {
+	        method = 'generateDebugHTMLFromByteArray';
 	      } else {
-	        throw new Error('Must specify attribute as=[html|canvas]');
+	        throw new Error('Must specify attribute as=[html|canvas|debug]');
 	      } 
-	      scope.$watch('data', function(newData) {
-	        if (newData) {
-	          vp[method](newData, function(result) {
-	            iElement.empty().append(result);
-	          });
+	      scope.$watch('receipt.data.data', function(data) {
+	        if (data) {
+	          if (as === "canvas" && scope.receipt._dataURL) {
+	            iElement.empty().append($('<img src="'+scope.receipt._dataURL+'">'));
+	          } else {
+	            vp[method](data, function(result) {
+	              if (as === "canvas") {
+	                scope.receipt._dataURL = result.toDataURL();
+	                iElement.empty().append($('<img src="'+scope.receipt._dataURL+'">'));
+	              } else {
+	                iElement.empty().append(result);
+	              }
+	            });
+	          }
 	        }
 	      }, true);
 	    }
@@ -88,7 +99,7 @@
 	var EscposEmulator = __webpack_require__(6);
 	var HtmlGenerator = __webpack_require__(7);
 
-	VirtualPrinter = function() {}
+	var VirtualPrinter = function() {}
 
 	function fetchBinaryData(binURL, cb) {
 	  var oReq = new XMLHttpRequest();
@@ -130,7 +141,7 @@
 	}
 
 	VirtualPrinter.prototype.analyzeFromByteArray = function(byteArray, done) {
-	  new CanvasAnalyzer({ buffer: byteArray }).analyze(done);
+	  new CanvasAnalyzer(this, { buffer: byteArray }).analyze(done);
 	}
 
 	VirtualPrinter.prototype.generateFromByteArray = function(byteArray, analysis, done) {
@@ -149,8 +160,12 @@
 	  return gen.generateStringFromString(string);
 	}
 
+	VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, done) {
+	  new HtmlGenerator(this, { debug: true }).generate(byteArray, done);
+	}
+
 	VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
-	  new HtmlGenerator().generate(byteArray, done);
+	  new HtmlGenerator(this).generate(byteArray, done);
 	}
 
 	module.exports = VirtualPrinter;
@@ -162,10 +177,11 @@
 
 	var CanvasGenerator = __webpack_require__(3);
 	var FakeCanvas = __webpack_require__(5);
+	var EscposEmulator = __webpack_require__(6);
 
-	CanvasAnalyzer = function(options) {
+	var CanvasAnalyzer = function(virtPrint, options) {
 	  if (options.path) {
-	    this.buffer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"fs\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())).readFileSync(options.path);
+	    this.buffer = virtPrint.fs.readFileSync(options.path);
 	  } else if (options.buffer) {
 	    this.buffer = options.buffer
 	  } else throw new Error('Options must include `path` or `buffer`')
@@ -202,7 +218,8 @@
 
 	var c = __webpack_require__(4);
 
-	CanvasGenerator = function(canvas, height, width){
+	var CanvasGenerator = function(canvas, height, width, debug){
+	  this.debug = !!debug;
 	  this.canvas = canvas || document.createElement('canvas');
 	  this.context = this.canvas.getContext('2d');
 	  this.setFont();
@@ -272,7 +289,11 @@
 	}
 
 	CanvasGenerator.prototype.getByte = function() {
-	  return this.byteArray[this.bytePosition++];
+	  var byte = this.byteArray[this.bytePosition++];
+	  if (this.debug) {
+	    this.context.fillText('{'+byte+'}', this.position.x, this.position.y);
+	  }
+	  return byte;
 	}
 
 	CanvasGenerator.prototype.getChar = function() {
@@ -294,7 +315,7 @@
 	}
 
 	CanvasGenerator.prototype.setEmulator = function(klass) {
-	  this.emulator = new klass(this);
+	  this.emulator = new klass(this, { debug: this.debug });
 	}
 
 	CanvasGenerator.prototype.generateFromUint8Array = function(byteArray, done) {
@@ -349,7 +370,11 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	FakeCanvas = function(){ this.actions = [] }
+	var FakeCanvas = function(opts){
+	  opts = opts || {};
+	  this.debug = opts.debug;
+	  this.actions = [];
+	}
 	FakeCanvas.prototype.getContext = function() { return this }
 	FakeCanvas.prototype.rect = function() {}
 	FakeCanvas.prototype.fill = function() {}
@@ -363,7 +388,7 @@
 	    fontUnit: 'px',
 	    fontSize: parseFloat(font[0]),
 	    x:x, y:y
-	  });
+	  })
 	}
 	module.exports = FakeCanvas;
 
@@ -374,8 +399,10 @@
 
 	var c = __webpack_require__(4);
 
-	EscposEmulator = function(generator) {
+	var EscposEmulator = function(generator, options) {
 	  this.generator = generator;
+	  this.debug = !!(options || {}).debug;
+	  console.log('escpost debug', this.debug);
 	}
 
 	EscposEmulator.prototype.emulate = function() {
@@ -509,9 +536,14 @@
 
 	var CustomGenerator = __webpack_require__(8);
 
-	var HtmlGenerator = function() {};
+	var HtmlGenerator = function(virtPrint, opts) {
+	  this.virtPrint = virtPrint;
+	  this.$ = virtPrint.$ || window.$;
+	  this.debug = !!(opts || {}).debug;
+	};
 
 	HtmlGenerator.prototype.generate = function(byteArray, done) {
+	  var $ = this.$;
 	  var container = $('<div>').css({
 	    whiteSpace: 'pre',
 	    fontFamily: 'monospace'
@@ -528,14 +560,14 @@
 	    line = null;
 	  }
 	  var startSpan = function(fontSize) {
-	    span = $('<span>').css({ fontSize: fontSize });
+	    span = $('<span>').css({ 'font-size': fontSize });
 	  }
 	  var endSpan = function() {
 	    if (span) line.append(span);
 	    span = null;
 	  }
 
-	  new CustomGenerator({ buffer: byteArray }).work(function(action) {
+	  new CustomGenerator(this.virtPrint, { debug: this.debug, buffer: byteArray }).work(function(action) {
 	    if (action.name === "fillText") {
 	      if (action.y != y) {
 	        endSpan()
@@ -550,7 +582,8 @@
 	        startSpan(action.fontSize)
 	        fontSize = action.fontSize;
 	      }
-	      span.get(0).innerText+=action.text
+	      //span.get(0).innerText+=action.text
+	      span.text( span.text() + action.text )
 	    }
 	  }, function() {
 	    endSpan()
@@ -568,15 +601,17 @@
 
 	var CanvasGenerator = __webpack_require__(3);
 	var FakeCanvas = __webpack_require__(5);
+	var EscposEmulator = __webpack_require__(6);
 
-	var CustomGenerator = function(options) {
+	var CustomGenerator = function(virtPrint, options) {
+	  this.debug = options.debug;
 	  if (options.path) {
-	    this.buffer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"fs\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())).readFileSync(options.path);
+	    this.buffer = virtPrint.fs.readFileSync(options.path);
 	  } else if (options.buffer) {
 	    this.buffer = options.buffer
 	  } else throw new Error('Options must include `path` or `buffer`')
 	  this.dimensions = { height: 0, width: 0 };
-	  this.generator = new CanvasGenerator( new FakeCanvas() );
+	  this.generator = new CanvasGenerator( new FakeCanvas({ debug: this.debug }), null, null, this.debug);
 	  this.generator.setEmulator(EscposEmulator);
 	}
 

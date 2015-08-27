@@ -45,7 +45,7 @@ VirtualPrinter.prototype.analyzeAndGenerateCanvasFromByteArray = function(byteAr
 }
 
 VirtualPrinter.prototype.analyzeFromByteArray = function(byteArray, done) {
-  new CanvasAnalyzer({ buffer: byteArray }).analyze(done);
+  new CanvasAnalyzer(this, { buffer: byteArray }).analyze(done);
 }
 
 VirtualPrinter.prototype.generateFromByteArray = function(byteArray, analysis, done) {
@@ -65,11 +65,11 @@ VirtualPrinter.prototype.showHidden = function(string) {
 }
 
 VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, done) {
-  new HtmlGenerator({ debug: true }).generate(byteArray, done);
+  new HtmlGenerator(this, { debug: true }).generate(byteArray, done);
 }
 
 VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
-  new HtmlGenerator().generate(byteArray, done);
+  new HtmlGenerator(this).generate(byteArray, done);
 }
 
 module.exports = VirtualPrinter;

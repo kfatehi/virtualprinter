@@ -1,14 +1,13 @@
 var CustomGenerator = require('./custom-generator');
 
-var HtmlGenerator = function(opts) {
+var HtmlGenerator = function(virtPrint, opts) {
+  this.virtPrint = virtPrint;
+  this.$ = virtPrint.$ || window.$;
   this.debug = !!(opts || {}).debug;
 };
 
 HtmlGenerator.prototype.generate = function(byteArray, done) {
-  if (typeof $ === "undefined") {
-    var cheerio = require('cheerio')
-    var $ = cheerio.load('<div></div>');
-  } 
+  var $ = this.$;
   var container = $('<div>').css({
     whiteSpace: 'pre',
     fontFamily: 'monospace'
@@ -32,7 +31,7 @@ HtmlGenerator.prototype.generate = function(byteArray, done) {
     span = null;
   }
 
-  new CustomGenerator({ debug: this.debug, buffer: byteArray }).work(function(action) {
+  new CustomGenerator(this.virtPrint, { debug: this.debug, buffer: byteArray }).work(function(action) {
     if (action.name === "fillText") {
       if (action.y != y) {
         endSpan()
