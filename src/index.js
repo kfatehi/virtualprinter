@@ -3,7 +3,7 @@ var CanvasGenerator = require('./canvas-generator');
 var EscposEmulator = require('./escpos-emulator');
 var HtmlGenerator = require('./html-generator');
 
-VirtualPrinter = function() {}
+var VirtualPrinter = function() {}
 
 function fetchBinaryData(binURL, cb) {
   var oReq = new XMLHttpRequest();

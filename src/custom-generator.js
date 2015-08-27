@@ -1,5 +1,6 @@
 var CanvasGenerator = require('./canvas-generator');
 var FakeCanvas = require('./fake-canvas');
+var EscposEmulator = require('./escpos-emulator');
 
 var CustomGenerator = function(options) {
   this.debug = options.debug;

@@ -1,7 +1,7 @@
 var CanvasGenerator = require('./canvas-generator');
 var FakeCanvas = require('./fake-canvas');
 
-CanvasAnalyzer = function(options) {
+var CanvasAnalyzer = function(options) {
   if (options.path) {
     this.buffer = require('fs').readFileSync(options.path);
   } else if (options.buffer) {

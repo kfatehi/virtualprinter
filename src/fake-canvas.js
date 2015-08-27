@@ -1,4 +1,4 @@
-FakeCanvas = function(opts){
+var FakeCanvas = function(opts){
   opts = opts || {};
   this.debug = opts.debug;
   this.actions = [];

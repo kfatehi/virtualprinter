@@ -1,6 +1,6 @@
 var c = require('./constants');
 
-CanvasGenerator = function(canvas, height, width, debug){
+var CanvasGenerator = function(canvas, height, width, debug){
   this.debug = !!debug;
   this.canvas = canvas || document.createElement('canvas');
   this.context = this.canvas.getContext('2d');
