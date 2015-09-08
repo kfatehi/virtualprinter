@@ -517,7 +517,7 @@
 	    line = null;
 	  }
 	  var startSpan = function(fontSize) {
-	    span = $('<span>').css({ 'font-size': fontSize });
+	    span = $('<span>').css({ 'font-size': fontSize+'px' });
 	  }
 	  var endSpan = function() {
 	    if (span) line.append(span);
