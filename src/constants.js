@@ -10,6 +10,7 @@ module.exports = {
     8: 'Emphasized',
     16: 'DoubleStrike',
     32: 'DoubleWide',
+    49: 'DoubleHeightDoubleWide',
     64: 'Italic',
     128: 'Underline'
   },
