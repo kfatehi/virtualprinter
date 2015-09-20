@@ -55,6 +55,7 @@
 	var CanvasGenerator = __webpack_require__(3);
 	var EscposEmulator = __webpack_require__(6);
 	var HtmlGenerator = __webpack_require__(7);
+	var SheetExtractor = __webpack_require__(9);
 
 	var VirtualPrinter = function() {}
 
@@ -123,6 +124,10 @@
 
 	VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
 	  new HtmlGenerator(this).generate(byteArray, done);
+	}
+
+	VirtualPrinter.prototype.getSheets = function(byteArray, done) {
+	  new SheetExtractor(this).extract(byteArray, done);
 	}
 
 	module.exports = VirtualPrinter;
@@ -364,7 +369,6 @@
 	var EscposEmulator = function(generator, options) {
 	  this.generator = generator;
 	  this.debug = !!(options || {}).debug;
-	  console.log('escpost debug', this.debug);
 	}
 
 	EscposEmulator.prototype.emulate = function() {
@@ -400,6 +404,7 @@
 	          } else if (m === 104) { // "D"
 	            var n = gen.getByte();
 	          }
+	          if (gen.cut) gen.cut();
 	          break;
 	        }
 	      }
@@ -610,6 +615,43 @@
 	}
 
 	module.exports = CustomGenerator;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var CanvasGenerator = __webpack_require__(3);
+	var FakeCanvas = __webpack_require__(5);
+	var EscposEmulator = __webpack_require__(6);
+	module.exports = SheetExtractor;
+
+	function SheetExtractor() {}
+
+	SheetExtractor.prototype.extract = function(byteArray, done) {
+	  var fc = new FakeCanvas();
+	  fc.fillText = function(){}
+	  var generator = new CanvasGenerator(fc);
+	  var start = 0;
+	  var sheets = [];
+	  generator.setEmulator(EscposEmulator);
+	  generator.cut = function() {
+	    sheets.push({
+	      start: start,
+	      end: generator.bytePosition
+	    });
+	    start = generator.bytePosition+1
+	  }
+
+	  generator.generateFromUint8Array(byteArray, function() {
+	    var slices = [];
+	    for (var i=0; i<sheets.length; i++) {
+	      var sheet = sheets[i];
+	      slices.push(byteArray.slice(sheet.start, sheet.end));
+	    }
+	    done(slices);
+	  })
+	};
 
 
 /***/ }
