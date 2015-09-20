@@ -228,6 +228,10 @@
 	  this.setFont(24);
 	}
 
+	CanvasGenerator.prototype.setMasterSelectDoubleHeightDoubleWide = function() {
+	  this.setFont(32);
+	}
+
 	CanvasGenerator.prototype.selectCharacterSize = function(byte) {
 	  var size = c.CHARACTER_SIZE[byte];
 	  if (size.width === 1 && size.height === 1) {
@@ -301,6 +305,7 @@
 	    8: 'Emphasized',
 	    16: 'DoubleStrike',
 	    32: 'DoubleWide',
+	    49: 'DoubleHeightDoubleWide',
 	    64: 'Italic',
 	    128: 'Underline'
 	  },
@@ -374,6 +379,27 @@
 	        case 'W': { break; }
 	        case '!':{
 	          gen.selectCharacterSize(gen.getByte());
+	          break;
+	        }
+	        case 'V': {
+	          var m = gen.getByte();
+	          if (m === 0 || m === 48) { // "A"
+	            console.log('Full cut');
+	          } else if (m === 1 || m === 49) { // "A"
+	            console.log('Partial cut');
+	          } else if (m === 65) { // "B"
+	            var n = gen.getByte();
+	          } else if (m === 66) { // "B"
+	            var n = gen.getByte();
+	          } else if (m === 97) { // "C"
+	            var n = gen.getByte();
+	          } else if (m === 98) { // "C"
+	            var n = gen.getByte();
+	          } else if (m === 103) { // "D"
+	            var n = gen.getByte();
+	          } else if (m === 104) { // "D"
+	            var n = gen.getByte();
+	          }
 	          break;
 	        }
 	      }
@@ -460,6 +486,10 @@
 	        }
 	        case 'E':{
 	          console.log('Select bold font, page 117');
+	          break;
+	        }
+	        case 'p': {
+	          console.log('Send pulse');
 	          break;
 	        }
 	        default: {
