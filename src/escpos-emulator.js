@@ -106,6 +106,10 @@ EscposEmulator.prototype.emulate = function() {
           console.log('Select bold font, page 117');
           break;
         }
+        case 'p': {
+          console.log('Send pulse');
+          break;
+        }
         default: {
           console.warn('Unimplemented ESC '+char+' ('+byte+') '+gen.peekChars(6).join(' '));
           break; 
