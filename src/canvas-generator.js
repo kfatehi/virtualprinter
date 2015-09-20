@@ -53,6 +53,10 @@ CanvasGenerator.prototype.setMasterSelectDoubleStrike = function() {
   this.setFont(24);
 }
 
+CanvasGenerator.prototype.setMasterSelectDoubleHeightDoubleWide = function() {
+  this.setFont(32);
+}
+
 CanvasGenerator.prototype.selectCharacterSize = function(byte) {
   var size = c.CHARACTER_SIZE[byte];
   if (size.width === 1 && size.height === 1) {
