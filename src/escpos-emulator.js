@@ -3,7 +3,6 @@ var c = require('./constants');
 var EscposEmulator = function(generator, options) {
   this.generator = generator;
   this.debug = !!(options || {}).debug;
-  console.log('escpost debug', this.debug);
 }
 
 EscposEmulator.prototype.emulate = function() {
@@ -39,6 +38,7 @@ EscposEmulator.prototype.emulate = function() {
           } else if (m === 104) { // "D"
             var n = gen.getByte();
           }
+          if (gen.cut) gen.cut();
           break;
         }
       }

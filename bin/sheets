@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+// Get pages
+
+var VirtualPrinter = require('../src');
+var vp = new VirtualPrinter();
+
+process.stdin.on('data', function(buf) {
+  vp.getSheets(buf, function(sheets) {
+    console.log('\ngot '+sheets.length+' sheets\n', sheets);
+  });
+});

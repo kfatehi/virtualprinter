@@ -2,6 +2,7 @@ var CanvasAnalyzer = require('./canvas-analyzer');
 var CanvasGenerator = require('./canvas-generator');
 var EscposEmulator = require('./escpos-emulator');
 var HtmlGenerator = require('./html-generator');
+var SheetExtractor = require('./sheet-extractor');
 
 var VirtualPrinter = function() {}
 
@@ -70,6 +71,10 @@ VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, do
 
 VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
   new HtmlGenerator(this).generate(byteArray, done);
+}
+
+VirtualPrinter.prototype.getSheets = function(byteArray, done) {
+  new SheetExtractor(this).extract(byteArray, done);
 }
 
 module.exports = VirtualPrinter;
