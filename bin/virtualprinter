@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Debug stuff like this
+// npm install -g simple-stacktrace watchy
+// watchy -w . -- bash -c "cat some-payload.bin | bin/virtualprinter 2>&1 | simple-stacktrace"
+var VirtualPrinter = require('../src');
+
+var vp = new VirtualPrinter();
+
+var $ = require('cheerio')
+window = { $: $ }
+
+process.stdin.on('data', function(buf) {
+  vp.generateHTMLFromByteArray(buf, function(result) {
+    result.find('>span').each(function(i, span) {
+      console.log($(span).text());
+    });
+  });
+});
