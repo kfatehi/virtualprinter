@@ -20,6 +20,27 @@ EscposEmulator.prototype.emulate = function() {
           gen.selectCharacterSize(gen.getByte());
           break;
         }
+        case 'V': {
+          var m = gen.getByte();
+          if (m === 0 || m === 48) { // "A"
+            console.log('Full cut');
+          } else if (m === 1 || m === 49) { // "A"
+            console.log('Partial cut');
+          } else if (m === 65) { // "B"
+            var n = gen.getByte();
+          } else if (m === 66) { // "B"
+            var n = gen.getByte();
+          } else if (m === 97) { // "C"
+            var n = gen.getByte();
+          } else if (m === 98) { // "C"
+            var n = gen.getByte();
+          } else if (m === 103) { // "D"
+            var n = gen.getByte();
+          } else if (m === 104) { // "D"
+            var n = gen.getByte();
+          }
+          break;
+        }
       }
       break;
     }
