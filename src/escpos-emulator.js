@@ -22,9 +22,9 @@ EscposEmulator.prototype.emulate = function() {
         case 'V': {
           var m = gen.getByte();
           if (m === 0 || m === 48) { // "A"
-            console.log('Full cut');
+            //console.log('Full cut');
           } else if (m === 1 || m === 49) { // "A"
-            console.log('Partial cut');
+            //console.log('Partial cut');
           } else if (m === 65) { // "B"
             var n = gen.getByte();
           } else if (m === 66) { // "B"
@@ -68,7 +68,7 @@ EscposEmulator.prototype.emulate = function() {
               gen.setScriptMode('subscript')
             break;
             default:
-              console.warn("Invalid ESC S %d command\n",ch);
+              //console.warn("Invalid ESC S %d command\n",ch);
             break;
           }
         }
@@ -77,7 +77,7 @@ EscposEmulator.prototype.emulate = function() {
           if (byte === 0) {
             // right side up, no problem
           } else {
-            console.warn("Unimplemented upside-down value "+String(byte));
+            //console.warn("Unimplemented upside-down value "+String(byte));
           }
           break;
         }
@@ -96,43 +96,43 @@ EscposEmulator.prototype.emulate = function() {
         }
         case '=': { break; } /* ESC = is nonrecommended */
         case 'c': {
-          console.log("Set horizontal motion index (HMI), page 106");
+          //console.log("Set horizontal motion index (HMI), page 106");
           break;
         }
         case '$': {
-          console.log("Set absolute horizontal print position, page 38");
+          //console.log("Set absolute horizontal print position, page 38");
           break;
         }
         case '2': {
-          console.log('Select 1/6th inch line spacing, page 60');
+          //console.log('Select 1/6th inch line spacing, page 60');
           break;
         }
         case 'R': {
-          console.log('Select an international character set, page 87');
+          //console.log('Select an international character set, page 87');
           break;
         }
         case 't':{
-          console.log('Select character table, page 84');
+          //console.log('Select character table, page 84');
           break;
         }
         case 'J':{
-          console.log('Advance print position vertically, page 48');
+          //console.log('Advance print position vertically, page 48');
           break;
         }
         case 'M':{
-          console.log('Select 10.5pt 12cpi, page 109');
+          //console.log('Select 10.5pt 12cpi, page 109');
           break;
         }
         case 'E':{
-          console.log('Select bold font, page 117');
+          //console.log('Select bold font, page 117');
           break;
         }
         case 'p': {
-          console.log('Send pulse');
+          //console.log('Send pulse');
           break;
         }
         default: {
-          console.warn('Unimplemented ESC '+char+' ('+byte+') '+gen.peekChars(6).join(' '));
+          console.warn('Unimplemented ESC '+char+' ('+byte+')')
           break; 
         }
       }
