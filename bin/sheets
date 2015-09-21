@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Get pages
+// watchy -w src -- bash -c "cat ../payloads/gburger/gburger-hamburger.bin | bin/sheets 2>&1 | simple-stacktrace"
 
 var VirtualPrinter = require('../src');
 var vp = new VirtualPrinter();
