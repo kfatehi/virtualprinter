@@ -10,22 +10,25 @@ SheetExtractor.prototype.extract = function(byteArray, done) {
   fc.fillText = function(){}
   var generator = new CanvasGenerator(fc);
   var start = 0;
-  var sheets = [];
+  var sheets = [[]];
   generator.setEmulator(EscposEmulator);
+  var _getByte = generator.getByte.bind(generator);
+  var i = 0;
+  var k = 0;
+  generator.getByte = function() {
+    var byte = _getByte();
+    sheets[i][k++] = byte;
+    return byte;
+  }
   generator.cut = function() {
-    sheets.push({
-      start: start,
-      end: generator.bytePosition
-    });
-    start = generator.bytePosition+1
+    sheets[++i] = [];
+    k = 0;
   }
 
   generator.generateFromUint8Array(byteArray, function() {
-    var slices = [];
     for (var i=0; i<sheets.length; i++) {
-      var sheet = sheets[i];
-      slices.push(byteArray.slice(sheet.start, sheet.end));
+      sheets[i] = new Buffer(sheets[i])
     }
-    done(slices);
+    done(sheets);
   })
 };
