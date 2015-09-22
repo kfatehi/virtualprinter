@@ -7,7 +7,7 @@ var VirtualPrinter = require('../src');
 var vp = new VirtualPrinter();
 
 var $ = require('cheerio')
-window = { $: $ }
+vp.$ = $
 
 var fs = require('fs');
 var outfile = __dirname+'/../output.html'
