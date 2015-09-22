@@ -1,11 +1,11 @@
 var c = require('./constants');
 
-var EscposEmulator = function(generator, options) {
+var ESCParser = function(generator, options) {
   this.generator = generator;
   this.debug = !!(options || {}).debug;
 }
 
-EscposEmulator.prototype.emulate = function() {
+ESCParser.prototype.parse = function() {
   var gen = this.generator;
   var byte = gen.getByte();
   switch (byte) {
@@ -138,19 +138,17 @@ EscposEmulator.prototype.emulate = function() {
       }
     }
     case c.CTL_LF: {
-      gen.position.y += gen.fontSize;
-      gen.position.x = 0;
+      gen.newLine();
       break;
     }
     default: {
       if (byte >= 32 && byte <= 126) {
         var char = String.fromCharCode(byte);
-        gen.context.fillText(char, gen.position.x, gen.position.y);
-        gen.position.x+=gen.fontSize * gen.fontSizeRatio;        
+        gen.write(char)
       }
       break;
     }
   }
 }
 
-module.exports = EscposEmulator;
+module.exports = ESCParser;

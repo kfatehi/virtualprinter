@@ -7,7 +7,6 @@ var cheerio = require('cheerio')
 var path = require('path');
 
 var vp = new VirtualPrinter();
-vp.$ = cheerio.load('');
 
 var fs = require('fs');
 var resultPath = path.join(process.cwd(), 'output.html')
@@ -19,11 +18,9 @@ var layoutFileContents = fs.readFileSync(layoutPath).toString()
 var $ = cheerio.load(layoutFileContents)
 
 process.stdin.on('data', function(buf) {
-  vp.generateHTMLFromByteArray(buf, function(result) {
+  vp.generateHTMLFromByteArray(buf, function(html) {
 
-    var el = vp.$(result)
-
-    $('#target').empty().html(el.html())
+    $('#target').empty().html(html)
 
     var finalHTML = $.html()
 
