@@ -3,23 +3,33 @@
 // npm install -g simple-stacktrace watchy
 // watchy -w . -- bash -c "cat some-payload.bin | bin/virtualprinter 2>&1 | simple-stacktrace"
 var VirtualPrinter = require('../src');
+var cheerio = require('cheerio')
+var path = require('path');
 
 var vp = new VirtualPrinter();
-
-var $ = require('cheerio')
-vp.$ = $
+vp.$ = cheerio.load('');
 
 var fs = require('fs');
-var outfile = __dirname+'/../output.html'
+var resultPath = path.join(process.cwd(), 'output.html')
+
+var layoutPath = path.join(__dirname, '..', 'test-layout.html');
+
+var layoutFileContents = fs.readFileSync(layoutPath).toString()
+
+var $ = cheerio.load(layoutFileContents)
 
 process.stdin.on('data', function(buf) {
   vp.generateHTMLFromByteArray(buf, function(result) {
-    result.find('>span').each(function(i, span) {
-      console.log($(span).text());
-    });
-    fs.writeFile(outfile, result.html(), function(err) {
+
+    var el = vp.$(result)
+
+    $('#target').empty().html(el.html())
+
+    var finalHTML = $.html()
+
+    fs.writeFile(resultPath, finalHTML, function(err) {
       if (err) throw err;
-      console.log('wrote html '+outfile);
+      console.log('wrote html '+resultPath);
     });
   });
 });
