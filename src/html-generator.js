@@ -24,7 +24,7 @@ HtmlGenerator.prototype.generate = function(byteArray, done) {
     line = null;
   }
   var startSpan = function(fontSize) {
-    span = $('<span>').css({ 'font-size': fontSize+'px' });
+    span = $('<span>').css({ 'font-size': (fontSize/10) +'em' });
   }
   var endSpan = function() {
     if (span) line.append(span);
