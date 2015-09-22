@@ -1,11 +1,22 @@
 var c = require('./constants');
 
-var ESCParser = function(generator, options) {
+module.exports = Parser;
+
+function Parser(generator, options) {
   this.generator = generator;
   this.debug = !!(options || {}).debug;
 }
 
-ESCParser.prototype.parse = function() {
+Parser.prototype.invoke = function(prefix, suffix) {
+  if (!prefix) throw new Error('Cannot invoke without a prefix');
+  if (!suffix) throw new Error('Cannot invoke '+prefix+' without a suffix');
+  var name = prefix+suffix;
+  var fn = this.generator[name];
+  if (!fn) throw new ReferenceError(name+' is not defined');
+  return fn.bind(this.generator)();
+}
+
+Parser.prototype.parse = function() {
   var gen = this.generator;
   var byte = gen.getByte();
   switch (byte) {
@@ -49,11 +60,11 @@ ESCParser.prototype.parse = function() {
       var char = String.fromCharCode(byte);
       switch (char) {
         case '!':{
-          gen.setMasterSelect(gen.getByte());
+          this.invoke('setMasterSelect', c.MASTER_SELECT[gen.getByte()]);
           break;
         }
         case 'a':{
-          gen.setJustification(gen.getByte());
+          this.invoke('setJustification', c.JUSTIFICATION[gen.getByte()]);
           break;
         }
         case 'S':{
@@ -125,10 +136,15 @@ ESCParser.prototype.parse = function() {
         }
         case 'E':{
           //console.log('Select bold font, page 117');
+          gen.selectBoldFont()
           break;
         }
         case 'p': {
           //console.log('Send pulse');
+          break;
+        }
+        case '3': {
+          // console.log('Some line spacing shit');
           break;
         }
         default: {
@@ -150,5 +166,3 @@ ESCParser.prototype.parse = function() {
     }
   }
 }
-
-module.exports = ESCParser;

@@ -1,4 +1,4 @@
-var ESCParser = require('./esc-parser');
+var Parser = require('./esc/parser');
 var HTMLEngine = require('./html-engine');
 var Generator = require('./generator');
 //var SheetExtractor = require('./sheet-extractor');
@@ -12,7 +12,7 @@ VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, do
 VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
   var html = new HTMLEngine();
   var gen = new Generator(byteArray, html)
-  var esc = new ESCParser(gen);
+  var esc = new Parser(gen);
   while (gen.hasBytes()) esc.parse();
   done(html.export());
 }

@@ -1,20 +1,10 @@
-var c = require('./constants');
-
-var Generator = function(byteArray, engine, debug){
+var Generator = function(byteArray, engine){
   this.bytePosition = 0;
   this.byteArray = byteArray;
   this.engine = engine;
+  this.setJustificationFlushLeft();
   this.setMasterSelectElite();
   this.engine.newLine();
-}
-
-Generator.prototype.dynamicInvoke = function(prefix, suffix) {
-  if (!prefix) throw new Error('Cannot dynamically invoke without a prefix');
-  if (!suffix) throw new Error('Cannot dynamically invoke '+prefix+' without a suffix');
-  var name = prefix+suffix;
-  var fn = this[name];
-  if (!fn) throw new ReferenceError(name+' is not defined');
-  return fn.bind(this)();
 }
 
 Generator.prototype.newLine = function() {
@@ -23,14 +13,6 @@ Generator.prototype.newLine = function() {
 
 Generator.prototype.write = function(char) {
   this.engine.write(char);
-}
-
-Generator.prototype.setJustification = function(byte) {
-  this.dynamicInvoke('setJustification', c.JUSTIFICATION.get(byte));
-}
-
-Generator.prototype.setMasterSelect = function(byte) {
-  this.dynamicInvoke('setMasterSelect', c.MASTER_SELECT[byte]);
 }
 
 Generator.prototype.setMasterSelectPica = function() {
@@ -59,18 +41,15 @@ Generator.prototype.selectCharacterSize = function(byte) {
 }
 
 Generator.prototype.setJustificationFlushLeft = function() {
-  //this.justification = 'left';
+  this.engine.alignLeft();
 }
 
 Generator.prototype.setJustificationCentering = function() {
-  //this.justification = 'center';
+  this.engine.alignCenter();
 }
 
 Generator.prototype.getByte = function() {
   var byte = this.byteArray[this.bytePosition++];
-  if (this.debug) {
-    this.context.fillText('{'+byte+'}', this.position.x, this.position.y);
-  }
   return byte;
 }
 

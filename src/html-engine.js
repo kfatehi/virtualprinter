@@ -2,17 +2,15 @@ var cheerio = require('cheerio');
 
 module.exports = function() {
   var $ = cheerio.load('');
-  var container = $('<div>').css({
-    whiteSpace: 'pre',
-    fontFamily: 'monospace'
-  });
+  var container = $('<div>')
   var span = null;
   var y = null;
   var line = null;
-  var spanStyle = null;
+  var spanStyle = {};
+  var lineStyle = {};
 
   function startLine() {
-    line = $('<p>');
+    line = $('<p>').css(lineStyle);
   }
 
   function endLine() {
@@ -34,13 +32,17 @@ module.exports = function() {
 
   return {
     setFont: function(n) {
-      spanStyle = {
-        'font-size': (n / 10)+'em'
-      }
+      spanStyle['font-size'] = (n / 10)+'em'
       if (span) {
         endSpan();
         startSpan();
       }
+    },
+    alignLeft: function() {
+      lineStyle['text-align'] = 'left';
+    },
+    alignCenter: function() {
+      lineStyle['text-align'] = 'center';
     },
     newLine: function() {
       endSpan();
@@ -52,7 +54,10 @@ module.exports = function() {
       span.text( span.text() + text )
     },
     export: function() {
-      return container;
+      return container.css({
+        'white-space': 'pre',
+        'font-family': 'monospace'
+      });
     }
   }
 }
