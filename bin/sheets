@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-// Get pages
-// watchy -w src -- bash -c "cat ../payloads/gburger/gburger-hamburger.bin | bin/sheets 2>&1 | simple-stacktrace"
+// Get sheets
+// watchy -w . -i output.html -- bash -c "cat ../payloads/gburger/gburger-hamburger.bin | bin/sheets"
 
 var VirtualPrinter = require('../src');
 var vp = new VirtualPrinter();
 
 process.stdin.on('data', function(buf) {
-  vp.getSheets(buf, function(sheets) {
-    console.log('\ngot '+sheets.length+' sheets\n', sheets);
-  });
+  var sheets = vp.sheets(buf);
+  console.log('\ngot '+sheets.length+' sheets\n', sheets);
 });

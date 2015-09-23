@@ -10,8 +10,7 @@ var layoutPath = path.join(__dirname, '..', 'test-layout.html');
 var layoutFileContents = fs.readFileSync(layoutPath).toString()
 var $ = cheerio.load(layoutFileContents)
 process.stdin.on('data', function(buf) {
-  vp.generateHTMLFromByteArray(buf, function(el) {
-    $('body').append(el)
-    process.stdout.write($.html())
-  });
+  var el = vp.cheerioElement(buf);
+  $('body').append(el)
+  process.stdout.write($.html())
 });

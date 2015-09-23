@@ -57,7 +57,7 @@ module.exports = function() {
       return container.css({
         'white-space': 'pre',
         'font-family': 'monospace'
-      });
+      })
     }
   }
 }

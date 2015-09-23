@@ -1,24 +1,40 @@
 var Parser = require('./esc/parser');
-var HTMLEngine = require('./html-engine');
 var Generator = require('./generator');
-//var SheetExtractor = require('./sheet-extractor');
+var CheerioEngine = require('./cheerio-engine');
+var SheetEngine = require('./sheet-engine');
 
 var VirtualPrinter = function() {}
 
-VirtualPrinter.prototype.generateDebugHTMLFromByteArray = function(byteArray, done) {
-  new Generator(true).generate(byteArray, done);
-}
-
-VirtualPrinter.prototype.generateHTMLFromByteArray = function(byteArray, done) {
-  var html = new HTMLEngine();
-  var gen = new Generator(byteArray, html)
-  var esc = new Parser(gen);
+VirtualPrinter.prototype.run = function(gen, esc, engine){
   while (gen.hasBytes()) esc.parse();
-  done(html.export());
+  return engine.export();
 }
 
-VirtualPrinter.prototype.getSheets = function(byteArray, done) {
-  new SheetExtractor().extract(byteArray, done);
+VirtualPrinter.prototype.cheerioElement = function(byteArray) {
+  var engine = new CheerioEngine();
+  var gen = new Generator(byteArray, engine)
+  var esc = new Parser(gen);
+  return this.run(gen, esc, engine);
+}
+
+VirtualPrinter.prototype.sheets = function(byteArray) {
+  var sheets = [[]];
+  var engine = new SheetEngine(sheets);
+  var gen = new Generator(byteArray, engine)
+  var esc = new Parser(gen);
+  var _getByte = gen.getByte.bind(gen);
+  var i = 0;
+  var k = 0;
+  gen.getByte = function() {
+    var byte = _getByte();
+    sheets[i][k++] = byte;
+    return byte;
+  }
+  gen.cut = function() {
+    sheets[++i] = [];
+    k = 0;
+  }
+  return this.run(gen, esc, engine);
 }
 
 module.exports = VirtualPrinter;
