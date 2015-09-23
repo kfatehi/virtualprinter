@@ -16,6 +16,16 @@ Parser.prototype.invoke = function(prefix, suffix) {
   return fn.bind(this.generator)();
 }
 
+Parser.prototype.selectCharacterSize = function() {
+  var byte = this.generator.getByte();
+  var size = c.CHARACTER_SIZE[byte];
+  if (size.width === 1 && size.height === 1) {
+    this.generator.selectCharacterSize(12);
+  } else if (size.width === 2 && size.height === 1) {
+    this.generator.selectCharacterSize(24);
+  }
+}
+
 Parser.prototype.parse = function() {
   var gen = this.generator;
   var byte = gen.getByte();
@@ -27,7 +37,7 @@ Parser.prototype.parse = function() {
         case 'L': { break; }
         case 'W': { break; }
         case '!':{
-          gen.selectCharacterSize(gen.getByte());
+          this.selectCharacterSize();
           break;
         }
         case 'V': {
@@ -100,8 +110,7 @@ Parser.prototype.parse = function() {
         case 'd': {
           var linesToFeed = gen.getByte();
           for (var i=0; i<linesToFeed; i++) {
-            gen.position.y += gen.fontSize;
-            gen.position.x = 0;
+            gen.newLine();
           }
           break;
         }

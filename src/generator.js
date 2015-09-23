@@ -31,13 +31,8 @@ Generator.prototype.setMasterSelectDoubleHeightDoubleWide = function() {
   this.engine.setFont(32);
 }
 
-Generator.prototype.selectCharacterSize = function(byte) {
-  var size = c.CHARACTER_SIZE[byte];
-  if (size.width === 1 && size.height === 1) {
-    this.engine.setFont(12);
-  } else if (size.width === 2 && size.height === 1) {
-    this.engine.setFont(24);
-  }
+Generator.prototype.selectCharacterSize = function(fontSize) {
+  this.engine.setFont(fontSize);
 }
 
 Generator.prototype.setJustificationFlushLeft = function() {
@@ -49,19 +44,17 @@ Generator.prototype.setJustificationCentering = function() {
 }
 
 Generator.prototype.getByte = function() {
-  var byte = this.byteArray[this.bytePosition++];
-  return byte;
+  return this.byteArray[this.bytePosition++];
 }
 
 Generator.prototype.getChar = function() {
   return String.fromCharCode(this.getByte());
 }
 
-Generator.prototype.peekChars = function(c) {
+Generator.prototype.peek = function(c) {
   var chars = [];
   for (var i=0; i<c; i++) {
-    var byte = this.getByte();
-    chars[i] = '"'+String.fromCharCode(byte)+'"/('+byte+')';
+    chars[i] = this.getByte();
   }
   this.bytePosition -= c;
   return chars;
