@@ -47,6 +47,15 @@ Generator.prototype.getByte = function() {
   return this.byteArray[this.bytePosition++];
 }
 
+Generator.prototype.eachByte = function(fn) {
+  var getByte = this.getByte.bind(this);
+  this.getByte = function() {
+    var byte = getByte();
+    fn(byte);
+    return byte;
+  }
+}
+
 Generator.prototype.getChar = function() {
   return String.fromCharCode(this.getByte());
 }
