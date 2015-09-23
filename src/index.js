@@ -10,10 +10,18 @@ VirtualPrinter.prototype.run = function(gen, esc, engine){
   return engine.export();
 }
 
-VirtualPrinter.prototype.cheerioElement = function(byteArray) {
+VirtualPrinter.prototype.cheerioElement = function(byteArray, options) {
   var engine = new CheerioEngine();
   var gen = new Generator(byteArray, engine)
   var esc = new Parser(gen);
+  if (options && options.showBytes) {
+    var _getByte = gen.getByte.bind(gen);
+    gen.getByte = function() {
+      var byte = _getByte();
+      engine.write(' '+byte)
+      return byte;
+    }
+  }
   return this.run(gen, esc, engine);
 }
 
